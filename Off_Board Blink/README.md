@@ -1,25 +1,17 @@
-# Off Board Blink
-Now that we have the whole blinking LED out of the way, why don't we try making things a little more convenient by taking the G2553 off the development board and into a breadboard. In addition to the software, your README needs to also contain a picture of your circuit with at least 2 LEDs blinking all on a breadboard an without a development board. This means that you will need:
-* Proper power being supplied to the processor
-* Proper Reset Circuitry 
-* Proper Bypass and Bulk Capacitors as needed
+# Lab 2-4: Off board blink
 
-Please be advised that you can easily damage or destroy one of the pins on the MSP430 by applying the wrong voltage or attempting to draw too much current from it. Really check your design before you power up to ensure you do not need request another processor.
+Nick Kluzynski
 
-## "Do I need to use a power supply to power this thing?"
-In the beginning part of the exercise, I would say that you can use the 5V/3.3V rails built into the development board by running wires. However, I would recommend looking into how to supply the processor from something like a battery or the power supply. You might want to look into different types of regulators. For example, your circuits may be powered off of a battery that is only 1.8V, or on a system that can only supply you with 13V.
+# Introduction
+The purpose of this lab is to control the LEDs on various MSP430 devices. In this iteration, LEDs blink symettrically on a breadboard, without using the development board. The MSP430G2553 is the only board available that can be removed, so this was the only one tested for this iteration.  Before starting this, a pin had to be continously set to power, so that the processor would not continously reset. To get the LEDs blinking, the ports corresponding to the button must be configured as an I/O and then as an input. Then, the ports corresponding to the LEDs must be configured to an output; and then that port must be controlled to turn on and off. There are several ways to do this, from for loops to timers. 
 
-## "What about the buttons and resistors and LEDS?"
-You remember those parts bins in the back of the teaching labs? They contain most everything you will need to do this portion of the lab. You should really make a effort to try and replicate what is on those development boards on the breadboard so you can begin to see what is needed to design with a microcontroller. Mess around with different color LEDS and see if they behave the same as the simple Red LEDs.
+## Implications
+### LEDs
+The way done here is to utilize timer interrupts to switch the LED. First, the port is configured as an output by selecting it as an I/O, then as an output.
 
-# YOU NEED TO CREATE THE FOLLOWING FOLDER
-* MSP430G2553
+### Breadboard
+On the breadboard, 5V were supplied to the rails. While the power was disconeccted, the chip was placed in the board with Vcc and Vss being supplied by the rails. Before the LEDs could be connected, a pull-down resistor was placed before the LED, which would then lead to the negative rail.
 
-## Extra Work
-Once you get to this point, you are pretty much set in terms of GPIO mastery getting the LEDs to blink, but there are some more exploratory tasks that you can do.
 
-### Off-Board Programming 
-Do we need to keep re-inserting the MSP into the development board to program it, or is there some way to keep the chip in the circuit? For starters, try to connect the header which connects the debugger and emulator (that parts that is really dense in parts) to your chip on your board. You will need to look at the datasheets for the MSP430G2553 and the Launchpad itself to see where and how to connect to the programmer. Next, you should really look at using the JTAG connector that is also available on your board.
-
-### UART/Button Control
-Remember that stuff you did a few parts ago? Can you actually get all of that working again off of the development board? Can you control which lights are on, the speed they blink at, etc.
+### Timers
+Before configuring the timer, global interrupts were enabled. Once that was done, 2 timers were then initialized to match SM clock operating at 1 MHz, then divided by 8. From there, the first interrupt was enabled and set to a value of 10,000. This makes it so that the timer increments until reaching 10,000. Upon reaching 10,000 it triggers the interrupt and restarts.  The second timer's first inttrupt was enabled, but was set to a different number. There are 2 seperate interrupt functions for each timer, and each one flips different LEDs

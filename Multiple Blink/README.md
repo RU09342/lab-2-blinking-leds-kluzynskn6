@@ -1,25 +1,16 @@
-# Multiple Blink
-Now that we have blinked at least 1 LED, what about blinking multiple LEDS at the same time? The minimum that you need to develop is blinking at least two LEDs at two different rates. Although I am not going to give you a speed, you should probably pick a rate which is visible to a standard human. I really hope that you take this further and perform some of the extra work for this part of the lab exercise.
+# Lab 2-2: Multiple Blink
+
+Nick Kluzynski
+
+# Introduction
+The purpose of this lab is to control the LEDs on various MSP430 devices. In this iteration, a two or more LEDs blinks symettrically at a 2 different preset rate. To do this, the ports corresponding to the LEDs must be configured to an output; and then that port must be controlled to turn on and off. There are several ways to do this, from for loops to timers.
+
+## Implications
+### Ports
+The way done here is to utilize timer interrupts to switch the LED. First, the port is configured as an output by selecting it as an I/O, then as an output.
 
 
-# YOU NEED TO CREATE THE FOLLOWING FOLDERS
-* MSP430G2553
-* MSP430F5529
-* MSP430FR2311
-* MSP430FR5994
-* MSP430FR6989
+### Timers
+Before configuring the timer, global interrupts were enabled. Once that was done, 2 timers were then initialized to match SM clock operating at 1 MHz, then divided by 8. From there, the first interrupt was enabled and set to a value of 10,000. This makes it so that the timer increments until reaching 10,000. Upon reaching 10,000 it triggers the interrupt and restarts.  The second timer's first inttrupt was enabled, but was set to a different number. There are 2 seperate interrupt functions for each timer, and each one flips different LEDs
 
-## README
-Remember to replace this README with your README once you are ready to submit. I would recommend either making a copy of this file or taking a screen shot. There might be a copy of all of these README's in a folder on the top level depending on the exercise.
 
-## Extra Work
-When you take a look at the development boards, you are limited to what is built into the platform.
-
-### Even More LEDs
-Since up to this point you should have hopefully noticed that you are simply just controlling each pin on your processor. So... what is keeping you from putting an LED on each pin? Can you actually control the speed of each of these LEDs?
-
-### Patterned Lights
-If you can control a ton of LEDs, what is keeping you from having a little fun? Why not try and make something like a moving face or other moving object in lights. *CAUTION* I would only do this if you have finished the rest of the lab.
-
-### UART Pattern Control
-If you have been using UART, could you set which LEDs are on or off based off some UART command? Would you want to send an Array over UART such as [1 0 1 0] or would you want to send a byte that corresponds to the status? Can you not only say which LEDs are on, but also tell them to blink at a particular rate if they were on (so LED1 Blink every 100ms)?
