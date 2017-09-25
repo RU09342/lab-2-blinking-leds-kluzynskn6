@@ -1,29 +1,28 @@
-# Simple Blink
-For starters, you will need to blink one of the on-board LED's at a particular rate. It is up to you to determine what rate you want to blink it at, however it has to be symmetrical (50% Duty Cycle), meaning equal times on and off. You should attempt multiple different speeds before moving on to the next part of the lab.
+# Lab 2-1: Simple Blink
 
-## YOU NEED TO CREATE THE FOLLOWING FOLDERS
-* MSP430G2553
-* MSP430F5529
-* MSP430FR2311
-* MSP430FR5994
-* MSP430FR6989
+Nick Kluzynski
 
-## How to not damage your processor
-Remember that your microprocessors are not hooked up to a nuclear power plant and they can only provide a finite amount of current and power to your attached devices. For each of your processors you should see what the maximum supply current is for the digital output pins and note it in your designs. Diodes are an interesting device where the V-I curve becomes almost a short circuit after only a couple volts. If you have a diode biased to operate at say 1 volt above its turn on voltage, you are going to be drawing quite a bit of amperage. 
+# Introduction
+The purpose of this lab is to control the LEDs on various MSP430 devices. In this iteration, a single LED blinks symettrically at a preset rate. To do this, the ports corresponding to the LED must be configured to an output; and then that port must be controlled to turn on and off. There are several ways to do this, from for loops to timers.
 
-Before you actually begin this lab, take the time to mess around with the simulation below and understand what the importance of the series resistance is in the design. What does the resistance prevent from happening? Does having this resistance impact the performance of the LED?
+## Implications
+### Ports
+The way done here is to utilize timer interrupts to switch the LED. First, the port is configured as an output by selecting it as an I/O, then as an output.
 
-<a href="http://everycircuit.com/circuit/5180823226810368">LED Current - EveryCircuit</a><br>
-<iframe width="560" height="360" src="http://everycircuit.com/embed/5180823226810368" frameborder="0"></iframe>
+The port was selected as an I/O by P1SEl &=0x01
+The port was set to an output by P1DIR |=0x01
 
-## README
-Remember to replace this README with your README once you are ready to submit. I would recommend either making a copy of this file or taking a screen shot. There might be a copy of all of these README's in a folder on the top level depending on the exercise.
+### Timers
+Before configuring the timer, global interrupts were enabled. Once that was done, the timer was then initialized to match SM clock operating at 1 MHz, then divided by 8. From there, the first interrupt was enabled and set to a value of 10,000. This makes it so that the timer increments until reaching 10,000. Upon reaching 10,000 it triggers the interrupt and restarts. During the trigger, the port is XORed with 1, which will alternate that port. 
+
+Interrupts are enabled by using _BIS_SR(GIE)
+The timer is set to SM clock with TA0CTL = TASSEL_2 + MC_1 + ID_3
+The interrupt register is determined by TA0CCTL0 = CCIE
+The intterupt is set by TA0CCR0 =  10000
+The LED was swithced inside the inttrupt by P1OUT^=0x01
+
+
 
 ## Extra Work
-Since this is so basic, there are a few things which might be interesting to implement.
 
-### UART Control: Single Character
-For starters, it would be interesting to tie in some of the UART code that was used before into this project. You might want to have the speed of the blinking controlled by a character sent over UART. For example, 's' could be a slow setting, 'm' could be medium speed, 'f' could be fast, and 'o' could be off.
-
-### UART Control: Rate Number
-Instead of depending on a character, what if we wanted to send a blinking period in milliseconds? So instead of 's', you could send something like '100' which corresponds to a 100 millisecond delay between the time the LED turns on again. Before you decide to tackle this, I would take a look at using a logic analyzer to see exactly what your computer is sending to your microprocessor. Also remember that the code previously provided will only service the UART Buffer one character at a time.
+I did not have continuous access to a UART cable, so none of this was attempted.
